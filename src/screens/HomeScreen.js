@@ -1,11 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import Geolocation from '@react-native-community/geolocation';
 import {useSelector, useDispatch} from 'react-redux';
-import {FlatList, Text} from 'react-native';
+import {FlatList, ActivityIndicator} from 'react-native';
 import styled from 'styled-components/native';
 import Input from '../components/Input';
 import Card from '../components/Card';
 import {listJobs} from '../actions/jobActions';
+import Wrapper from '../components/Wrapper';
 
 const HomeScreen = () => {
   const [position, setPosition] = useState(null);
@@ -33,7 +34,11 @@ const HomeScreen = () => {
         />
       );
     } else {
-      return <Text>Loading Data...</Text>;
+      return (
+        <Container>
+          <ActivityIndicator size="large" color="#f3f3f5" />
+        </Container>
+      );
     }
   };
 
@@ -49,11 +54,11 @@ const HomeScreen = () => {
     </Wrapper>
   );
 };
-const Wrapper = styled.View`
-  flex: 1;
-  background-color: #06022f;
 
-  padding: 15px;
+const Container = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
 `;
 
 const StyledText = styled.Text`
@@ -67,6 +72,11 @@ const Title = styled.Text`
   margin: 10px 20px;
   color: #f3f3f5;
   font-weight: bold;
+`;
+
+const Loading = styled.Text`
+  font-size: 17px;
+  color: #f3f3f5;
 `;
 
 export default HomeScreen;

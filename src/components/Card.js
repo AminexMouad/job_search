@@ -1,20 +1,35 @@
 import React from 'react';
-import {Text, View} from 'react-native';
+import moment from 'moment';
+import {useNavigation} from '@react-navigation/native';
 import styled from 'styled-components/native';
+import {TouchableOpacity} from 'react-native';
 
 const Card = ({job}) => {
+  const navigation = useNavigation();
   return (
-    <StyledView>
+    <StyledView
+      onPress={() =>
+        navigation.navigate('Detail', {id: job.id, title: job.company})
+      }>
+      <Container align="flex-end">
+        <Date>
+          {moment(job.created_at, 'ddd MMM D HH:mm:ss UTC gggg').fromNow()}
+        </Date>
+      </Container>
       <Container>
         <Title>{job.title}</Title>
-        <Date>4d</Date>
       </Container>
       <CompanyName>
         {job.company} - {job.location}
       </CompanyName>
       <Tags>
         <Tag>{job.type}</Tag>
-        <Button>More Infos</Button>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate('Detail', {id: job.id, title: job.company})
+          }>
+          <Button>More Infos</Button>
+        </TouchableOpacity>
       </Tags>
     </StyledView>
   );
@@ -31,7 +46,7 @@ const Container = styled.View`
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: ${(props) => (props.align ? props.align : 'space-between')};
 `;
 
 const Tags = styled.View`
@@ -45,7 +60,7 @@ const Tags = styled.View`
 const Title = styled.Text`
   color: #f3f3f5;
   font-weight: bold;
-  font-size: 17px;
+  font-size: 15px;
 `;
 const CompanyName = styled.Text`
   color: #87a1bb;
@@ -63,7 +78,7 @@ const Tag = styled.Text`
 const Date = styled.Text`
   color: #87a1bb;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 11px;
 `;
 
 const Button = styled.Text`
