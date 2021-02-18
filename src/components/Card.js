@@ -1,5 +1,7 @@
 import React from 'react';
 import moment from 'moment';
+import {responsiveFontSize} from 'react-native-responsive-dimensions';
+
 import {useNavigation} from '@react-navigation/native';
 import styled from 'styled-components/native';
 import {TouchableOpacity} from 'react-native';
@@ -60,12 +62,12 @@ const Tags = styled.View`
 const Title = styled.Text`
   color: #f3f3f5;
   font-weight: bold;
-  font-size: 15px;
+  font-size: ${responsiveFontSize(1.55)}px;
 `;
 const CompanyName = styled.Text`
   color: #87a1bb;
   font-weight: 600;
-  font-size: 15px;
+  font-size: ${responsiveFontSize(1.35)}px;
 `;
 const Tag = styled.Text`
   background-color: #5069da;
@@ -73,16 +75,20 @@ const Tag = styled.Text`
   font-weight: 600;
   padding: 5px;
   border-radius: 5px;
+  margin-top: 10px;
+  font-size: ${responsiveFontSize(1.5)}px;
 `;
 
 const Date = styled.Text`
   color: #87a1bb;
   font-weight: 700;
-  font-size: 11px;
+  font-size: ${responsiveFontSize(1.3)}px;
 `;
 
 const Button = styled.Text`
   color: #87a1bb;
+  font-size: ${responsiveFontSize(1.4)}px;
+
   text-decoration: underline;
 `;
 
