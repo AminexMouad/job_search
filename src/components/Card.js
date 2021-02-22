@@ -11,7 +11,7 @@ const Card = ({job}) => {
   return (
     <StyledView
       onPress={() =>
-        navigation.navigate('Detail', {id: job.id, title: job.company})
+        navigation.navigate('Detail', {id: job.id, title: job.title})
       }>
       <Container align="flex-end">
         <Date>
@@ -28,7 +28,7 @@ const Card = ({job}) => {
         <Tag>{job.type}</Tag>
         <TouchableOpacity
           onPress={() =>
-            navigation.navigate('Detail', {id: job.id, title: job.company})
+            navigation.navigate('Detail', {id: job.id, title: job.title})
           }>
           <Button>More Infos</Button>
         </TouchableOpacity>
@@ -88,7 +88,6 @@ const Date = styled.Text`
 const Button = styled.Text`
   color: #87a1bb;
   font-size: ${responsiveFontSize(1.4)}px;
-
   text-decoration: underline;
 `;
 

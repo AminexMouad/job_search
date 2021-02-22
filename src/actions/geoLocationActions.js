@@ -11,10 +11,10 @@ import {
 } from '../constants/geoLocationConstants';
 
 export const getCurrentPosition = () => (disaptch) => {
-  try {
-    disaptch({type: GEOLOCATION_REQUEST});
+  disaptch({type: GEOLOCATION_REQUEST});
 
-    Geolocation.getCurrentPosition((info) => {
+  Geolocation.getCurrentPosition(
+    (info) => {
       disaptch({
         type: GEOLOCATION_SUCCESS,
         payload: {
@@ -22,10 +22,11 @@ export const getCurrentPosition = () => (disaptch) => {
           longitude: info.coords.longitude,
         },
       });
-    });
-  } catch (error) {
-    disaptch({type: GEOLOCATION_FAIL, payload: error});
-  }
+    },
+    (error) => {
+      disaptch({type: GEOLOCATION_FAIL, payload: error});
+    },
+  );
 };
 
 export const getCountryName = ({latitude, longitude}) => async (disaptch) => {

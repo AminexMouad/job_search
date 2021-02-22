@@ -24,7 +24,7 @@ export const geoCoderReducer = (state = {}, action) => {
     case GEOCODER_FAIL:
       return {loading: true};
     case GEOCODER_SUCCESS:
-      return {loading: false, location: action.payload};
+      return {loading: false, location: action.payload.data[0]};
     case GEOCODER_FAIL:
       return {loading: false, error: action.payload};
     default:

@@ -10,7 +10,7 @@ const StyledInput = styled.TextInput.attrs({
   placeholderTextColor: '#bbbac4',
 })`
   background-color: #5c5a6c;
-  font-size: ${responsiveFontSize(1.5)}px;
+  font-size: ${responsiveFontSize(1.8)}px;
   color: #c3c2cb;
   border-radius: 15px;
   padding: 10px 15px;

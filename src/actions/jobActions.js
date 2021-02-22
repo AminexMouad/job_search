@@ -6,61 +6,47 @@ import {
   JOB_LIST_FAIL,
   JOB_LIST_REQUEST,
   JOB_LIST_SUCCESS,
-  JOB_NEXT_PAGE_FAIL,
   JOB_NEXT_PAGE_REQUEST,
   JOB_NEXT_PAGE_SUCCESS,
 } from '../constants/jobConstants';
 
-export const listJobs = (keyword = '', pageNumber = 1, location = '') => async (
-  dispatch,
-) => {
+export const listJobs = (
+  keyword = '',
+  jobType = false,
+  pageNumber = 1,
+  location = '',
+) => async (dispatch) => {
+  const config = {
+    timeout: 300,
+  };
+
   try {
     if (pageNumber === 1) {
       dispatch({type: JOB_LIST_REQUEST});
+    } else {
+      dispatch({type: JOB_NEXT_PAGE_REQUEST});
     }
+
     const {data} = await axios.get(
-      `https://jobs.github.com/positions.json?description=${keyword}&location=${location}&page=${pageNumber}`,
+      `https://jobs.github.com/positions.json?description=${keyword}&full_time=${
+        jobType === 'Full' ? true : false
+      }&location=${location}&page=${pageNumber}`,
+      config,
     );
+
     if (pageNumber === 1) {
       dispatch({type: JOB_LIST_SUCCESS, payload: data});
     } else {
-      dispatch({type: JOB_NEXT_PAGE_SUCCESS, payload: {data}});
+      dispatch({type: JOB_NEXT_PAGE_SUCCESS, payload: data});
     }
   } catch (error) {
+    console.log(error);
     dispatch({
       type: JOB_LIST_FAIL,
-      payload: error.response.data.message
-        ? error.response.data.message
-        : error.message,
+      payload: error.message,
     });
   }
 };
-
-// export const nextPageJobs = (
-//   keyword = '',
-//   pageNumber = 2,
-//   location = '',
-// ) => async (dispatch, getState) => {
-//   try {
-//     dispatch({type: JOB_NEXT_PAGE_REQUEST});
-
-//     const {
-//       jobList: {jobs},
-//     } = getState();
-//     const {data} = await axios.get(
-//       `https://jobs.github.com/positions.json?description=${keyword}&location=${location}&page=${pageNumber}`,
-//     );
-//     console.log(data);
-//     dispatch({type: JOB_NEXT_PAGE_SUCCESS, payload: {jobs, data}});
-//   } catch (error) {
-//     dispatch({
-//       type: JOB_NEXT_PAGE_FAIL,
-//       payload: error.response.data.message
-//         ? error.response.data.message
-//         : error.message,
-//     });
-//   }
-// };
 
 export const jobDetails = (id) => async (dispatch) => {
   try {
@@ -72,9 +58,7 @@ export const jobDetails = (id) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: JOB_DETAILS_FAIL,
-      payload: error.response.data.message
-        ? error.response.data.message
-        : error.message,
+      payload: error.message,
     });
   }
 };
