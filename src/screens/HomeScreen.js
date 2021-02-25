@@ -1,62 +1,42 @@
 import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, FlatList} from 'react-native';
-import {responsiveFontSize} from 'react-native-responsive-dimensions';
+import Icon from 'react-native-vector-icons/dist/Feather';
 import {useDispatch, useSelector} from 'react-redux';
 import styled from 'styled-components/native';
-import {
-  getCountryName,
-  getCurrentPosition,
-} from '../actions/geoLocationActions';
+import {getCurrentPosition} from '../actions/geoLocationActions';
 import {listJobs} from '../actions/jobActions';
+import {setPageNumber} from '../actions/searchActions';
 import Card from '../components/Card';
-import Wrapper from '../components/Wrapper';
 import Modal from '../components/CustomModal';
-import Icon from 'react-native-vector-icons/dist/Feather';
+import Wrapper from '../components/Wrapper';
 
 const HomeScreen = () => {
-  const [pageNumber, setPageNumber] = useState(1);
-  const [modalVisible, setModalVisible] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const dispatch = useDispatch();
-
-  const emitter = new EventEmitter();
 
   const jobList = useSelector((state) => state.jobList);
   const {jobs, loading, loadingNext, error: errorFetching} = jobList;
   const geoLocation = useSelector((state) => state.geoLocation);
   const {location, error} = geoLocation;
-  const geoCoder = useSelector((state) => state.geoCoder);
-  const {location: locationData} = geoCoder;
-
   const search = useSelector((state) => state.search);
-  const {keyword, type} = search;
+  const {keyword, type, pageNumber} = search;
 
   useEffect(() => {
-
-
     dispatch(getCurrentPosition());
   }, []);
 
   useEffect(() => {
     if (location) {
       console.log(location);
-      // dispatch(getCountryName(location));
     } else if (error) {
       dispatch(listJobs());
-      setPageNumber(pageNumber + 1);
+      dispatch(setPageNumber(pageNumber + 1));
     } else {
+      dispatch(listJobs());
       console.log('no location');
     }
   }, [location, error]);
-
-  useEffect(() => {
-    if (locationData) {
-      // dispatch(listJobs(keyword, pageNumber, locationData.region));
-      setPageNumber(pageNumber + 1);
-    } else {
-      console.log('no data about your position');
-    }
-  }, [locationData]);
 
   const renderData = () => {
     if (!loading) {
@@ -73,17 +53,22 @@ const HomeScreen = () => {
             renderItem={({item}) => {
               return <Card job={item} />;
             }}
+            ListEmptyComponent={() => (
+              <Container>
+                <Title>There are no job available.</Title>
+              </Container>
+            )}
             refreshing={loadingNext ? true : false}
-            keyExtractor={(item) => `${item.id}`}
+            keyExtractor={(item, index) => `${index}`}
             onRefresh={() => {
               dispatch(listJobs());
             }}
             scrollEnabled={loadingNext ? false : true}
             onEndReached={() => {
-              setPageNumber(pageNumber + 1);
-              dispatch(listJobs(keyword, type, pageNumber));
+              dispatch(setPageNumber(pageNumber + 1));
+              dispatch(listJobs(keyword, type, pageNumber + 1));
             }}
-            onEndReachedThreshold={0.2}
+            onEndReachedThreshold={0.1}
           />
         );
       }
@@ -101,15 +86,15 @@ const HomeScreen = () => {
       <Row>
         <Title>Jobs for you</Title>
         <Button onPress={() => setModalVisible(!modalVisible)}>
-          <Icon name="search" color="white" size={responsiveFontSize(2.5)} />
+          <Icon name="search" color="white" size={22} />
         </Button>
       </Row>
       {renderData()}
       <Modal
-        error={error}
         visible={modalVisible}
         transparent={true}
         animationType="slide"
+        onRequestClose={() => setModalVisible(!modalVisible)}
         onPressExit={() => setModalVisible(!modalVisible)}
       />
     </Wrapper>
@@ -123,7 +108,7 @@ const Container = styled.View`
 `;
 
 const Title = styled.Text`
-  font-size: ${responsiveFontSize(2.5)}px;
+  font-size: 25px;
   margin: 5px 20px;
   color: #f3f3f5;
   font-weight: bold;

@@ -39,6 +39,6 @@ export const getCountryName = ({latitude, longitude}) => async (disaptch) => {
 
     disaptch({type: GEOCODER_SUCCESS, payload: data});
   } catch (error) {
-    disaptch({type: GEOCODER_FAIL, payload: error});
+    disaptch({type: GEOCODER_FAIL, payload: error.message});
   }
 };

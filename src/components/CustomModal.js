@@ -1,40 +1,49 @@
-import React, {useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import CheckBox from '@react-native-community/checkbox';
+import React, {useState, useEffect} from 'react';
 import {Modal, TouchableOpacity} from 'react-native';
-import {responsiveFontSize} from 'react-native-responsive-dimensions';
+import Icon from 'react-native-vector-icons/dist/Feather';
+import {useDispatch, useSelector} from 'react-redux';
 import styled from 'styled-components/native';
+import {getCountryName} from '../actions/geoLocationActions';
+import {listJobs} from '../actions/jobActions';
+import {setKeyword, setType, setPageNumber} from '../actions/searchActions';
 import Button from './Button';
 import Input from './Input';
-import Icon from 'react-native-vector-icons/dist/Feather';
-import CheckBox from '@react-native-community/checkbox';
-import {setKeyword, setType} from '../actions/searchActions';
-import {listJobs} from '../actions/jobActions';
-import {getCurrentPosition} from '../actions/geoLocationActions';
 const CustomModal = (props) => {
   const [currentPosition, setcurrentPosition] = useState(false);
 
   const dispatch = useDispatch();
   const search = useSelector((state) => state.search);
 
-  const {keyword, type} = search;
+  const geoLocation = useSelector((state) => state.geoLocation);
+  const {location, error} = geoLocation;
+  const geoCoder = useSelector((state) => state.geoCoder);
+  const {location: position, loading, error: errorGeocoder} = geoCoder;
+
+  const {keyword, type, pageNumber} = search;
 
   const onSubmitForm = () => {
-    dispatch(listJobs(keyword, type));
-  };
+    dispatch(setPageNumber(1));
 
-  console.log(type);
+    if (currentPosition && position) {
+      dispatch(listJobs(keyword, type, 1, position.country));
+    } else {
+      dispatch(listJobs(keyword, type, 1));
+    }
+  };
   return (
     <Modal {...props}>
       <ModalContainer>
-        <ModalBody>
+      <ModalBody>
           <TouchableOpacity onPress={props.onPressExit}>
             <Icon
               name="x"
               color="white"
-              size={responsiveFontSize(3.5)}
+              size={35}
               style={{alignSelf: 'flex-end'}}></Icon>
           </TouchableOpacity>
           <Title>Refine your search</Title>
+
           <Input
             value={keyword}
             onChangeText={(e) => {
@@ -55,7 +64,7 @@ const CustomModal = (props) => {
           </Row>
 
           <Row>
-            {props.error ? (
+            {error ? (
               <Description>
                 Please turn on your GPS for a better and accurate results.
               </Description>
@@ -65,12 +74,30 @@ const CustomModal = (props) => {
                   disabled={false}
                   value={currentPosition}
                   tintColors={{true: '#516add'}}
-                  onValueChange={(newValue) => setcurrentPosition(newValue)}
+                  onValueChange={(newValue) => {
+                    setcurrentPosition(newValue);
+                    dispatch(getCountryName(location));
+                  }}
                 />
                 <Description>Use my current position</Description>
               </>
             )}
           </Row>
+          {currentPosition && (
+            <Row>
+              {loading ? (
+                <Description>Getting your current Position....</Description>
+              ) : errorGeocoder ? (
+                <Description>{errorGeocoder} </Description>
+              ) : (
+                <Description>
+                  Your current position :{' '}
+                  {position.region + ' - ' + position.country}
+                </Description>
+              )}
+            </Row>
+          )}
+
           <Button
             label="Search"
             width="100%"
@@ -101,21 +128,16 @@ const ModalBody = styled.View`
 `;
 
 const Title = styled.Text`
-  font-size: ${responsiveFontSize(2.5)}px;
+  font-size: 23px;
   text-align: center;
   font-weight: bold;
   color: #f0f3f6;
   margin: 5px 0 15px 0;
 `;
 
-const Label = styled.Text`
-  color: #f0f3f6;
-  font-size: ${responsiveFontSize(1.5)}px;
-`;
-
 const Description = styled.Text`
   color: #f0f3f6;
-  font-size: ${responsiveFontSize(1.7)}px;
+  font-size: 16px;
 `;
 
 const Row = styled.View`
@@ -131,6 +153,5 @@ const Tag = styled.TouchableOpacity`
   padding: 5px 10px;
   border-radius: 5px;
   margin-left: 10px;
-  font-size: ${responsiveFontSize(1.6)}px;
 `;
 export default CustomModal;

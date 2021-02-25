@@ -1,5 +1,6 @@
 import {
   GEOCODER_FAIL,
+  GEOCODER_REQUEST,
   GEOCODER_SUCCESS,
   GEOLOCATION_FAIL,
   GEOLOCATION_REQUEST,
@@ -21,7 +22,7 @@ export const geoLocalisationReducer = (state = {}, action) => {
 
 export const geoCoderReducer = (state = {}, action) => {
   switch (action.type) {
-    case GEOCODER_FAIL:
+    case GEOCODER_REQUEST:
       return {loading: true};
     case GEOCODER_SUCCESS:
       return {loading: false, location: action.payload.data[0]};

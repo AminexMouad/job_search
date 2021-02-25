@@ -1,5 +1,4 @@
 import React from 'react';
-import {responsiveFontSize} from 'react-native-responsive-dimensions';
 import styled from 'styled-components/native';
 
 const Button = (props) => {
@@ -23,7 +22,7 @@ const ButtonText = styled.Text`
   color: #fff;
   text-align: center;
   font-weight: bold;
-  font-size: ${responsiveFontSize(1.6)}px;
+  font-size: 18px;
 `;
 
 export default Button;

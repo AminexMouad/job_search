@@ -1,5 +1,5 @@
 import React from 'react';
-import {SafeAreaView, StatusBar} from 'react-native';
+import {StatusBar} from 'react-native';
 import styled from 'styled-components/native';
 
 const Wrapper = ({children}) => {
@@ -13,7 +13,7 @@ const Wrapper = ({children}) => {
 const Container = styled.View`
   flex: 1;
   background-color: #06022f;
-  padding: 15px;
+  padding: 5px 15px 15px 15px;
 `;
 
 const StyleSafeAreaView = styled.SafeAreaView`

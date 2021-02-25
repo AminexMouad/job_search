@@ -1,10 +1,8 @@
-import React from 'react';
-import moment from 'moment';
-import {responsiveFontSize} from 'react-native-responsive-dimensions';
-
 import {useNavigation} from '@react-navigation/native';
-import styled from 'styled-components/native';
+import moment from 'moment';
+import React from 'react';
 import {TouchableOpacity} from 'react-native';
+import styled from 'styled-components/native';
 
 const Card = ({job}) => {
   const navigation = useNavigation();
@@ -62,12 +60,12 @@ const Tags = styled.View`
 const Title = styled.Text`
   color: #f3f3f5;
   font-weight: bold;
-  font-size: ${responsiveFontSize(1.55)}px;
+  font-size: 18px;
 `;
 const CompanyName = styled.Text`
   color: #87a1bb;
   font-weight: 600;
-  font-size: ${responsiveFontSize(1.35)}px;
+  font-size: 16px;
 `;
 const Tag = styled.Text`
   background-color: #5069da;
@@ -76,18 +74,18 @@ const Tag = styled.Text`
   padding: 5px;
   border-radius: 5px;
   margin-top: 10px;
-  font-size: ${responsiveFontSize(1.5)}px;
+  font-size: 17px;
 `;
 
 const Date = styled.Text`
   color: #87a1bb;
   font-weight: 700;
-  font-size: ${responsiveFontSize(1.3)}px;
+  font-size: 14px;
 `;
 
 const Button = styled.Text`
   color: #87a1bb;
-  font-size: ${responsiveFontSize(1.4)}px;
+  font-size: 16px;
   text-decoration: underline;
 `;
 

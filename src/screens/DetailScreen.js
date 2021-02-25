@@ -7,7 +7,6 @@ import {
   View,
 } from 'react-native';
 import HTML from 'react-native-render-html';
-import {responsiveFontSize} from 'react-native-responsive-dimensions';
 import {useDispatch, useSelector} from 'react-redux';
 import styled from 'styled-components/native';
 import {jobDetails} from '../actions/jobActions';
@@ -59,7 +58,7 @@ const DetailScreen = ({route, navigation}) => {
               <Image
                 onLoadStart={(e) => setLoadingImage(true)}
                 onLoadEnd={() => setLoadingImage(false)}
-                defaultSource={require('../assets/company.png')}
+                resizeMode="contain"
                 source={
                   job.company_logo
                     ? {uri: job.company_logo}
@@ -84,14 +83,14 @@ const DetailScreen = ({route, navigation}) => {
               <Label>Description :</Label>
               <HTML
                 tagsStyles={{
-                  h2: {color: '#516add', fontSize: responsiveFontSize(2)},
-                  h3: {color: '#516add', fontSize: responsiveFontSize(1.9)},
+                  h2: {color: '#516add', fontSize: 20},
+                  h3: {color: '#516add', fontSize: 18},
                   p: {
                     color: '#f7f7f9',
-                    fontSize: responsiveFontSize(1.78),
+                    fontSize: 16,
                     lineHeight: 35,
                   },
-                  li: {color: '#f7f7f9', fontSize: responsiveFontSize(1.78)},
+                  li: {color: '#f7f7f9', fontSize: 16},
                   strong: {color: '#516add'},
                 }}
                 alterNode={(node) => {
@@ -122,7 +121,7 @@ const DetailScreen = ({route, navigation}) => {
 
 const Image = styled.Image`
   height: 100px;
-  width: 100px;
+  width: 50%;
   align-self: center;
 `;
 
@@ -136,7 +135,7 @@ const Container = styled.View`
 `;
 
 const Title = styled.Text`
-  font-size: ${responsiveFontSize(2)}px;
+  font-size: 25px;
   margin: 10px 0;
   color: #fff;
   font-weight: bold;
@@ -147,12 +146,12 @@ const Title = styled.Text`
 const Location = styled.Text`
   color: #a1abb5;
   font-weight: 600;
-  font-size: ${responsiveFontSize(2)}px;
+  font-size: 20px;
   text-align: center;
 `;
 
 const Label = styled.Text`
-  font-size: ${responsiveFontSize(1.9)}px;
+  font-size: 20px;
   margin: 10px 0;
   color: #516add;
   font-weight: bold;
@@ -165,7 +164,7 @@ const Tag = styled.Text`
   padding: 5px 10px;
   border-radius: 5px;
   margin-left: 10px;
-  font-size: ${responsiveFontSize(1.6)}px;
+  font-size: 18px;
 `;
 
 const ButtonContainer = styled.TouchableOpacity`
@@ -181,11 +180,11 @@ const ButtonText = styled.Text`
   color: #fff;
   text-align: center;
   font-weight: bold;
-  font-size: ${responsiveFontSize(1.5)}px;
+  font-size: 16px;
 `;
 
 const Description = styled.Text`
-  font-size: ${responsiveFontSize(1.6)}px;
+  font-size: 16px;
   color: #fff;
 `;
 

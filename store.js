@@ -7,6 +7,7 @@ import {
 } from './src/reducers/geolocationReducers';
 import {jobDetailReducer, jobListReducer} from './src/reducers/jobReducers';
 import {searchReducers} from './src/reducers/searchReducers';
+
 const reducer = combineReducers({
   jobList: jobListReducer,
   jobDetail: jobDetailReducer,
