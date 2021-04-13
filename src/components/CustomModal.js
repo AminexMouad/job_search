@@ -7,6 +7,7 @@ import styled from 'styled-components/native';
 import {getCountryName} from '../actions/geoLocationActions';
 import {listJobs} from '../actions/jobActions';
 import {setKeyword, setType, setPageNumber} from '../actions/searchActions';
+import { useJobs } from '../api';
 import Button from './Button';
 import Input from './Input';
 const CustomModal = (props) => {
@@ -20,17 +21,19 @@ const CustomModal = (props) => {
   const geoCoder = useSelector((state) => state.geoCoder);
   const {location: position, loading, error: errorGeocoder} = geoCoder;
 
-  const {keyword, type, pageNumber} = search;
+  const {keyword, type} = search;
 
   const onSubmitForm = () => {
     dispatch(setPageNumber(1));
 
-    if (currentPosition && position) {
-      dispatch(listJobs(keyword, type, 1, position.country));
-    } else {
-      dispatch(listJobs(keyword, type, 1));
-    }
+    useJobs(123)
+    // if (currentPosition && position) {
+    //   dispatch(listJobs(keyword, type, 1, position.country));
+    // } else {
+    //   dispatch(listJobs(keyword, type, 1));
+    // }
   };
+
   return (
     <Modal {...props}>
       <ModalContainer>

@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, FlatList} from 'react-native';
+import {ActivityIndicator, FlatList, Text} from 'react-native';
+import {useQuery} from 'react-query';
 import Icon from 'react-native-vector-icons/dist/Feather';
 import {useDispatch, useSelector} from 'react-redux';
 import styled from 'styled-components/native';
@@ -10,75 +11,121 @@ import Card from '../components/Card';
 import Modal from '../components/CustomModal';
 import Wrapper from '../components/Wrapper';
 
+import {useJobs} from '../api';
+
 const HomeScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
-
+  const [jobs, setJobs] = useState([]);
   const dispatch = useDispatch();
 
-  const jobList = useSelector((state) => state.jobList);
-  const {jobs, loading, loadingNext, error: errorFetching} = jobList;
+  // const jobList = useSelector((state) => state.jobList);
+  // const {jobs, loading, loadingNext, error: errorFetching} = jobList;
   const geoLocation = useSelector((state) => state.geoLocation);
   const {location, error} = geoLocation;
   const search = useSelector((state) => state.search);
   const {keyword, type, pageNumber} = search;
 
-  useEffect(() => {
-    dispatch(getCurrentPosition());
-  }, []);
+  // useEffect(() => {
+  //   dispatch(getCurrentPosition());
+  // }, []);
 
-  useEffect(() => {
-    if (location) {
-      console.log(location);
-    } else if (error) {
-      dispatch(listJobs());
-      dispatch(setPageNumber(pageNumber + 1));
-    } else {
-      dispatch(listJobs());
-      console.log('no location');
-    }
-  }, [location, error]);
+  // useEffect(() => {
+  //   if (location) {
+  //     console.log(location);
+  //   } else if (error) {
+  //     dispatch(listJobs());
+  //     dispatch(setPageNumber(pageNumber + 1));
+  //   } else {
+  //     dispatch(listJobs());
+  //     console.log('no location');
+  //   }
+  // }, [location, error]);
+
+  const queryInfo = useJobs();
+
+  if (queryInfo.data) {
+    console.log('data jat', queryInfo.data);
+  }
 
   const renderData = () => {
-    if (!loading) {
-      if (errorFetching) {
-        return (
-          <Container>
-            <Title>{errorFetching}</Title>
-          </Container>
-        );
-      } else {
-        return (
-          <FlatList
-            data={jobs}
-            renderItem={({item}) => {
-              return <Card job={item} />;
-            }}
-            ListEmptyComponent={() => (
-              <Container>
-                <Title>There are no job available.</Title>
-              </Container>
-            )}
-            refreshing={loadingNext ? true : false}
-            keyExtractor={(item, index) => `${index}`}
-            onRefresh={() => {
-              dispatch(listJobs());
-            }}
-            scrollEnabled={loadingNext ? false : true}
-            onEndReached={() => {
-              dispatch(setPageNumber(pageNumber + 1));
-              dispatch(listJobs(keyword, type, pageNumber + 1));
-            }}
-            onEndReachedThreshold={0.1}
-          />
-        );
-      }
-    } else {
+    if (queryInfo.isLoading) {
       return (
         <Container>
           <ActivityIndicator size="large" color="#f3f3f5" />
         </Container>
       );
+    } else if (queryInfo.isError) {
+      return (
+        <Container>
+          <Title align="center">{queryInfo.error.message}</Title>
+        </Container>
+      );
     }
+    return (
+      <FlatList
+        data={queryInfo.data.data}
+        renderItem={({item}) => {
+          return <Card job={item} />;
+        }}
+        ListEmptyComponent={() => (
+          <Container>
+            <Title>There are no job available.</Title>
+          </Container>
+        )}
+        // refreshing={loadingNext ? true : false}
+        keyExtractor={(item, index) => `${index}`}
+        // onRefresh={() => {
+        //   dispatch(listJobs());
+        // }}
+        // scrollEnabled={loadingNext ? false : true}
+        // onEndReached={() => {
+        //   dispatch(setPageNumber(pageNumber + 1));
+        //   dispatch(listJobs(keyword, type, pageNumber + 1));
+        // }}
+        onEndReachedThreshold={0.1}
+      />
+    );
+
+    // if (!loading) {
+    //   if (errorFetching) {
+    //     return (
+    //       <Container>
+    //         <Title>{errorFetching}</Title>
+    //       </Container>
+    //     );
+    //   } else {
+    //     return (
+    //       <FlatList
+    //         data={jobs}
+    //         renderItem={({item}) => {
+    //           return <Card job={item} />;
+    //         }}
+    //         ListEmptyComponent={() => (
+    //           <Container>
+    //             <Title>There are no job available.</Title>
+    //           </Container>
+    //         )}
+    //         refreshing={loadingNext ? true : false}
+    //         keyExtractor={(item, index) => `${index}`}
+    //         onRefresh={() => {
+    //           dispatch(listJobs());
+    //         }}
+    //         scrollEnabled={loadingNext ? false : true}
+    //         onEndReached={() => {
+    //           dispatch(setPageNumber(pageNumber + 1));
+    //           dispatch(listJobs(keyword, type, pageNumber + 1));
+    //         }}
+    //         onEndReachedThreshold={0.1}
+    //       />
+    //     );
+    //   }
+    // } else {
+    //   return (
+    //     <Container>
+    //       <ActivityIndicator size="large" color="#f3f3f5" />
+    //     </Container>
+    //   );
+    // }
   };
 
   return (
@@ -112,6 +159,7 @@ const Title = styled.Text`
   margin: 5px 20px;
   color: #f3f3f5;
   font-weight: bold;
+  text-align: ${(props) => props.align || 'left'};
 `;
 
 const Row = styled.View`

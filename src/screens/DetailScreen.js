@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
   ActivityIndicator,
   Linking,
@@ -7,11 +7,11 @@ import {
   View,
 } from 'react-native';
 import HTML from 'react-native-render-html';
-import {useDispatch, useSelector} from 'react-redux';
+import {useQuery} from 'react-query';
+import {useDispatch} from 'react-redux';
 import styled from 'styled-components/native';
-import {jobDetails} from '../actions/jobActions';
+import {client} from '../api/client';
 import Wrapper from '../components/Wrapper';
-import {JOB_DETAILS_RESET} from '../constants/jobConstants';
 
 const DetailScreen = ({route, navigation}) => {
   const regExp = /(href=")(.*?)(?=\")/;
@@ -21,101 +21,105 @@ const DetailScreen = ({route, navigation}) => {
 
   const dispatch = useDispatch();
 
-  const jobDetail = useSelector((state) => state.jobDetail);
-  const {loading, job} = jobDetail;
+  // const jobDetail = useSelector((state) => state.jobDetail);
+  // const {loading, job} = jobDetail;
 
-  useEffect(() => {
-    dispatch(jobDetails(id));
-    return () => {
-      console.log('Component did umount');
-      dispatch({type: JOB_DETAILS_RESET});
-    };
-  }, []);
+  // useEffect(() => {
+  //   dispatch(jobDetails(id));
+  //   return () => {
+  //     console.log('Component did umount');
+  //     dispatch({type: JOB_DETAILS_RESET});
+  //   };
+  // }, []);
+
+  const queryInfo = useQuery(`job-${id}`, async () => {
+    return await client.get(`/positions/${id}.json`);
+  });
+
+  const {isLoading, data} = queryInfo;
 
   return (
-    <>
-      <Wrapper>
-        {loading ? (
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <ActivityIndicator size="large" color="#f3f3f5" />
-          </View>
-        ) : (
-          <ScrollView>
-            <Container>
-              {loadingImage && (
-                <ActivityIndicator
-                  size="large"
-                  color="#f3f3f5"
-                  style={{alignSelf: 'center', justifySelf: 'center'}}
-                />
-              )}
+    <Wrapper>
+      {isLoading ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <ActivityIndicator size="large" color="#f3f3f5" />
+        </View>
+      ) : (
+        <ScrollView>
+          <Container>
+            {loadingImage && (
+              <ActivityIndicator
+                size="large"
+                color="#f3f3f5"
+                style={{alignSelf: 'center', justifySelf: 'center'}}
+              />
+            )}
 
-              <Image
-                onLoadStart={(e) => setLoadingImage(true)}
-                onLoadEnd={() => setLoadingImage(false)}
-                resizeMode="contain"
-                source={
-                  job.company_logo
-                    ? {uri: job.company_logo}
-                    : require('../assets/company.png')
+            <Image
+              onLoadStart={(e) => setLoadingImage(true)}
+              onLoadEnd={() => setLoadingImage(false)}
+              resizeMode="contain"
+              source={
+                data.data.company_logo
+                  ? {uri: data.data.company_logo}
+                  : require('../assets/company.png')
+              }
+            />
+          </Container>
+
+          <Container>
+            <Title>{data.data.title}</Title>
+            <Location>{data.data.location}</Location>
+          </Container>
+          <TypeContainer>
+            <Label>Company Name : </Label>
+            <Description>{data.data.company}</Description>
+          </TypeContainer>
+          <TypeContainer>
+            <Label>Type :</Label>
+            <Tag>{data.data.type}</Tag>
+          </TypeContainer>
+          <Container>
+            <Label>Description :</Label>
+            <HTML
+              tagsStyles={{
+                h2: {color: '#516add', fontSize: 20},
+                h3: {color: '#516add', fontSize: 18},
+                p: {
+                  color: '#f7f7f9',
+                  fontSize: 16,
+                  lineHeight: 35,
+                },
+                li: {color: '#f7f7f9', fontSize: 16},
+                strong: {color: '#516add'},
+              }}
+              alterNode={(node) => {
+                const {name, parent} = node;
+                if (name === 'li') {
+                  node.tagName = 'p';
+                  return node;
                 }
-              />
-            </Container>
-
-            <Container>
-              <Title>{job.title}</Title>
-              <Location>{job.location}</Location>
-            </Container>
-            <TypeContainer>
-              <Label>Company Name : </Label>
-              <Description>{job.company}</Description>
-            </TypeContainer>
-            <TypeContainer>
-              <Label>Type :</Label>
-              <Tag>{job.type}</Tag>
-            </TypeContainer>
-            <Container>
-              <Label>Description :</Label>
-              <HTML
-                tagsStyles={{
-                  h2: {color: '#516add', fontSize: 20},
-                  h3: {color: '#516add', fontSize: 18},
-                  p: {
-                    color: '#f7f7f9',
-                    fontSize: 16,
-                    lineHeight: 35,
-                  },
-                  li: {color: '#f7f7f9', fontSize: 16},
-                  strong: {color: '#516add'},
-                }}
-                alterNode={(node) => {
-                  const {name, parent} = node;
-                  if (name === 'li') {
-                    node.tagName = 'p';
-                    return node;
-                  }
-                }}
-                source={{html: `${job.description}`}}
-                contentWidth={contentWidth}
-              />
-            </Container>
-            <Container>
-              <ButtonContainer
-                onPress={async () =>
-                  await Linking.openURL(regExp.exec(job.how_to_apply)[2])
-                }>
-                <ButtonText>Apply Now</ButtonText>
-              </ButtonContainer>
-            </Container>
-          </ScrollView>
-        )}
-      </Wrapper>
-    </>
+              }}
+              source={{html: `${data.data.description}`}}
+              contentWidth={contentWidth}
+            />
+          </Container>
+          <Container>
+            <ButtonContainer
+              onPress={async () =>
+                await Linking.openURL(regExp.exec(data.data.how_to_apply)[2])
+              }>
+              <ButtonText>Apply Now</ButtonText>
+            </ButtonContainer>
+          </Container>
+        </ScrollView>
+      )}
+    </Wrapper>
   );
 };
 

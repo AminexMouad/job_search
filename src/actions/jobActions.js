@@ -32,11 +32,6 @@ export const listJobs = (
       }&location=${location}&page=${pageNumber}`,
       config,
     );
-    console.log(
-      `https://jobs.github.com/positions.json?description=${keyword}&full_time=${
-        jobType === 'Full' ? true : false
-      }&location=${location}&page=${pageNumber}`,
-    );
     if (pageNumber === 1) {
       dispatch({type: JOB_LIST_SUCCESS, payload: data});
     } else {
